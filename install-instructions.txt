@@ -20,7 +20,10 @@ echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/ros-a
 sudo apt update && sudo apt upgrade -y
 sudo apt install ros-humble-desktop
 sudo apt install ros-dev-tools
-source /opt/ros/humble/setup.bash && echo "source /opt/ros/humble/setup.bash" >> .bashrc
+
+## do this in virtual env
+# put this in ~/venvs/myenv/bin/activate for virtual env
+#source /opt/ros/humble/setup.bash && echo "source /opt/ros/humble/setup.bash" >> .bashrc
 pip install --upgrade pip
 pip install -U empy==3.3.4 pyros-genmsg setuptools # omit the --user for virtualenv
 
@@ -42,12 +45,11 @@ git clone https://github.com/PX4/px4_msgs.git
 git clone https://github.com/PX4/px4_ros_com.git
 cd ..
 source /opt/ros/humble/setup.bash
-pip install catkin_pkg
-pip install lark
+#pip install catkin_pkg # should be installed from  bash ~/IdeaProjects/px4-ros2-localization/PX4-Autopilot/Tools/setup/ubuntu.sh
+#pip install lark # should be installed from  bash ~/IdeaProjects/px4-ros2-localization/PX4-Autopilot/Tools/setup/ubuntu.sh
 colcon build
 
-### sourcing workspace
-cd ~/IdeaProjects/px4-ros2-localization/ws_sensor_combined/
-source /opt/ros/humble/setup.bash
-source install/local_setup.bash
+### sourcing workspace # should be done from /home/ctitus/venvs/myenv/bin/activate (at the bottom include) source /opt/ros/humble/setup.bash # source ros2
+#cd ~/IdeaProjects/px4-ros2-localization/ws_sensor_combined/
+source /opt/ros/humble/setup.bash && source /home/ctitus/IdeaProjects/px4-ros2-localization/ws_sensor_combined/install/local_setup.bash
 
