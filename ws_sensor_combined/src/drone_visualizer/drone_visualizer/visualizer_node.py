@@ -85,7 +85,7 @@ class VisualizerNode(Node):
         # TF: home → drone_frame
         drone_tf = TransformStamped()
         drone_tf.header.stamp = now
-        drone_tf.header.frame_id = 'home'
+        drone_tf.header.frame_id = 'home_frame'
         drone_tf.child_frame_id = 'drone_frame'
         drone_tf.transform.translation.x = self.drone_pos[0] - self.home_pos[0]
         drone_tf.transform.translation.y = self.drone_pos[1] - self.home_pos[1]
@@ -102,7 +102,7 @@ class VisualizerNode(Node):
         gimbal_tf.child_frame_id = 'gimbal_frame'
         gimbal_tf.transform.translation.x = 0.0
         gimbal_tf.transform.translation.y = 0.0
-        gimbal_tf.transform.translation.z = -0.1
+        gimbal_tf.transform.translation.z = 0.0
         gimbal_tf.transform.rotation.x = self.gimbal_q[0]
         gimbal_tf.transform.rotation.y = self.gimbal_q[1]
         gimbal_tf.transform.rotation.z = self.gimbal_q[2]
@@ -113,7 +113,7 @@ class VisualizerNode(Node):
         # PoseStamped: drone
         drone_pose = PoseStamped()
         drone_pose.header.stamp = now
-        drone_pose.header.frame_id = 'home'
+        drone_pose.header.frame_id = 'home_frame'
         drone_pose.pose.position.x = drone_tf.transform.translation.x
         drone_pose.pose.position.y = drone_tf.transform.translation.y
         drone_pose.pose.position.z = drone_tf.transform.translation.z
@@ -126,7 +126,7 @@ class VisualizerNode(Node):
         gimbal_pose.header.frame_id = 'drone_frame'
         gimbal_pose.pose.position.x = 0.0
         gimbal_pose.pose.position.y = 0.0
-        gimbal_pose.pose.position.z = -0.1
+        gimbal_pose.pose.position.z = 0.0
         gimbal_pose.pose.orientation.x = self.gimbal_q[0]
         gimbal_pose.pose.orientation.y = self.gimbal_q[1]
         gimbal_pose.pose.orientation.z = self.gimbal_q[2]
