@@ -25,6 +25,9 @@
     <mapping directory="$PROJECT_DIR$/PX4-Autopilot/Tools/simulation/jsbsim/jsbsim_bridge/models/ATI-Resolution" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/PX4-Autopilot/Tools/simulation/jsbsim/jsbsim_bridge/models/Rascal" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/PX4-Autopilot/boards/modalai/voxl2/libfc-sensor-api" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/PX4-Autopilot/build/px4_sitl_default/OpticalFlow/src/OpticalFlow" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/PX4-Autopilot/build/px4_sitl_default/OpticalFlow/src/OpticalFlow/external/klt_feature_tracker" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/PX4-Autopilot/build/px4_sitl_default/src/modules/uxrce_dds_client/src/libmicroxrceddsclient_project-build/microcdr/src/microcdr" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/PX4-Autopilot/platforms/nuttx/NuttX/apps" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/PX4-Autopilot/platforms/nuttx/NuttX/nuttx" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/PX4-Autopilot/src/drivers/actuators/vertiq_io/iq-module-communication-cpp" vcs="Git" />

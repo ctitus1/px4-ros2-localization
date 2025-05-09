@@ -1,7 +1,6 @@
 #!/bin/bash
 
-source /opt/ros/humble/setup.bash
-source /home/ctitus/IdeaProjects/px4-ros2-localization/ws_sensor_combined/install/local_setup.bash
+source /opt/ros/humble/setup.bash && source ~/IdeaProjects/px4-ros2-localization/ws_sensor_combined/install/local_setup.bash
 
 # Start Micro XRCE Agent in background
 MicroXRCEAgent udp4 -p 8888 > /dev/null 2>&1 &
