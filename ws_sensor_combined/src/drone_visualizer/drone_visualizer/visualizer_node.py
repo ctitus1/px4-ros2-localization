@@ -48,7 +48,7 @@ class VisualizerNode(Node):
 
         self.drone_pos = [0.0, 0.0, 0.0]
         self.drone_q = [0.0, 0.0, 0.0, 1.0]
-        self.gimbal_q = [0.0, 0.0, 0.0, 1.0]
+        self.gimbal_q = [0.0, 0.0, 0.0, 1.0] # set this to resting orientation of gimbal
         self.home_pos = [0.0, 0.0, 0.0]
 
         qos = QoSProfile(
@@ -60,7 +60,7 @@ class VisualizerNode(Node):
         self.create_subscription(VehicleLocalPosition, '/fmu/out/vehicle_local_position', self.local_pos_callback, qos)
         self.create_subscription(VehicleAttitude, '/fmu/out/vehicle_attitude', self.attitude_callback, qos)
         self.create_subscription(GimbalDeviceSetAttitude, '/fmu/in/gimbal_device_set_attitude', self.gimbal_callback, qos)
-        self.create_subscription(HomePosition, '/fmu/out/home_position', self.home_callback, qos)
+        self.create_subscription(HomePosition, '/fmu/in/home_position', self.home_callback, qos)
 
         self.timer = self.create_timer(0.1, self.publish_transforms)
 
@@ -77,6 +77,9 @@ class VisualizerNode(Node):
 
     def gimbal_callback(self, msg):
         q = msg.q
+        if np.any(np.isnan(q)):
+            self.get_logger().warn(f"Quaternion contains NaN — skipping. q = {q}")
+            return
         self.gimbal_q = ned_to_flu_quat([float(q[1]), float(q[2]), float(q[3]), float(q[0])])
 
     def publish_transforms(self):
