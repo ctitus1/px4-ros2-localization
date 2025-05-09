@@ -1,69 +1,52 @@
 import rclpy
 from rclpy.node import Node
+from px4_msgs.msg import GimbalDeviceSetAttitude
+from builtin_interfaces.msg import Time
 
-from px4_msgs.msg import VehicleAttitude, GimbalDeviceSetAttitude, VehicleLocalPosition, HomePosition
-from rclpy.qos import QoSProfile, ReliabilityPolicy, DurabilityPolicy
+from pymavlink import mavutil
+import threading
+import time
 
-class Px4ListenerNode(Node):
+class MavlinkListenerNode(Node):
     def __init__(self):
-        super().__init__('px4_listener_node')
+        super().__init__('mavlink_listener_node')
 
-        qos_profile = QoSProfile(
-            reliability=ReliabilityPolicy.BEST_EFFORT,
-            durability=DurabilityPolicy.VOLATILE,
-            depth=10
-        )
+        self.publisher_ = self.create_publisher(GimbalDeviceSetAttitude, '/fmu/in/gimbal_device_set_attitude', 10)
 
-        # self.create_subscription(
-        #     VehicleAttitude,
-        #     '/fmu/out/vehicle_attitude',
-        #     self.attitude_callback,
-        #     qos_profile
-        # )
+        self.get_logger().info('Starting MAVLink listener on UDP port 14550...')
+        self.mav = mavutil.mavlink_connection('udp:127.0.0.1:14445') # requires mavlink forwarding in QGC to be checked (or mavlink forwarded to this port)
 
-        self.create_subscription(
-            GimbalDeviceSetAttitude,
-            '/fmu/out/gimbal_set_attitude',
-            self.gimbal_callback,
-            qos_profile
-        )
+        self.thread = threading.Thread(target=self.mavlink_loop, daemon=True)
+        self.thread.start()
 
-        # self.create_subscription(
-        #     VehicleLocalPosition,
-        #     '/fmu/out/vehicle_local_position',
-        #     self.local_pos_callback,
-        #     qos_profile
-        # )
+    def mavlink_loop(self):
+        while rclpy.ok():
+            msg = self.mav.recv_match(type='GIMBAL_DEVICE_SET_ATTITUDE', blocking=True, timeout=1.0)
+            if msg is not None:
+                ros_msg = GimbalDeviceSetAttitude()
 
-        # self.create_subscription(
-        #     HomePosition,
-        #     '/fmu/out/home_position',
-        #     self.home_callback,
-        #     qos_profile
-        # )
+                # Timestamp (convert to ROS time)
+                now = int(self.get_clock().now().nanoseconds / 1000)  # Convert to microseconds
+                ros_msg.timestamp = now
 
-        self.get_logger().info('PX4 listener node started.')
 
-    def attitude_callback(self, msg):
-        q = msg.q
-        self.get_logger().info(f'VEHICLE_ATTITUDE: q=[{q[0]:.3f}, {q[1]:.3f}, {q[2]:.3f}, {q[3]:.3f}]')
+                # Set fields
+                ros_msg.q = list(msg.q)
+                ros_msg.target_system = msg.target_system
+                ros_msg.target_component = msg.target_component
+                ros_msg.flags = msg.flags
 
-    def gimbal_callback(self, msg):
-        q = msg.q
-        self.get_logger().info(f'GIMBAL_DEVICE_ATTITUDE_STATUS: q=[{q[0]:.3f}, {q[1]:.3f}, {q[2]:.3f}, {q[3]:.3f}]')
+                # Optional fields if needed:
+                # ros_msg.angular_velocity_x = ...
+                # ros_msg.angular_velocity_y = ...
+                # ros_msg.angular_velocity_z = ...
 
-    def local_pos_callback(self, msg):
-        self.get_logger().info(f'VEHICLE_LOCAL_POSITION: x={msg.x:.2f}, y={msg.y:.2f}, z={msg.z:.2f}')
-
-    def home_callback(self, msg):
-        self.get_logger().info(
-            f'HOME_POSITION: lat={msg.latitude}, lon={msg.longitude}, alt={msg.altitude}, '
-            f'x={msg.x}, y={msg.y}, z={msg.z}'
-        )
+                self.publisher_.publish(ros_msg)
+                self.get_logger().info(f'Published GIMBAL_DEVICE_SET_ATTITUDE to PX4')
 
 def main(args=None):
     rclpy.init(args=args)
-    node = Px4ListenerNode()
+    node = MavlinkListenerNode()
     rclpy.spin(node)
     node.destroy_node()
     rclpy.shutdown()
