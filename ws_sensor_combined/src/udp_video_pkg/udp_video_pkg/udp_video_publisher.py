@@ -17,6 +17,7 @@ class UDPVideoPublisher(Node):
 
         # Load YAML manually using PyYAML
         self.camera_info = self.load_camera_info_from_yaml("/home/ctitus/.ros/camera_info/gz500_camera.yaml")
+        # self.camera_info = self.load_camera_info_from_yaml("/home/ctitus/.ros/camera_info/gz500_camera_distorted.yaml")
 
         # GStreamer pipeline to receive UDP stream
         self.pipeline = (
