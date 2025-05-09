@@ -77,7 +77,7 @@ class VisualizerNode(Node):
 
     def gimbal_callback(self, msg):
         q = msg.q
-        self.gimbal_q = ned_to_flu_quat([float(q[0]), float(q[1]), float(q[2]), float(q[3])])
+        self.gimbal_q = ned_to_flu_quat([float(q[1]), float(q[2]), float(q[3]), float(q[0])])
 
     def publish_transforms(self):
         now = self.get_clock().now().to_msg()
